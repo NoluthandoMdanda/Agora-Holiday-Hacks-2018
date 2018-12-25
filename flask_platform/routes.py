@@ -2,16 +2,21 @@ import os
 import secrets
 from PIL import Image
 
-from flask import render_template, url_for, flash, redirect, request
-from flask_platform import app, db, bcrypt
-from flask_platform.forms import RegistrationForm, LoginForm, UpdateAccountForm, ShowForm
+from flask import render_template, url_for, flash, redirect, request, abort
+from flask_platform import app, db, bcrypt, mail
+from flask_platform.forms import (RegistrationForm, LoginForm, UpdateAccountForm, 
+                                ShowForm, RequestResetForm, ResetPasswordForm)
 from flask_platform.models import User, Show
 from flask_login import login_user, current_user, logout_user, login_required
+from flask_mail import Message
+
 
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('home.html')
+    page = request.args.get('page', 1, type=int)
+    shows = Show.query.order_by(Show.date_posted.desc()).paginate(page=page, per_page=5)
+    return render_template('home.html', shows=shows)
 
 @app.route("/about")
 def about():
@@ -108,39 +113,95 @@ def new_show():
                            form=form, legend='New Show')
 
 
-@app.route("/post/<int:post_id>")
-def post(post_id):
-    post = Post.query.get_or_404(post_id)
-    return render_template('post.html', title=post.title, post=post)
+@app.route("/show/<int:show_id>")
+def show(show_id):
+    show = Show.query.get_or_404(show_id)
+    return render_template('show.html', title=show.title, show=show)
 
 
-@app.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
+@app.route("/show/<int:show_id>/update", methods=['GET', 'POST'])
 @login_required
-def update_post(post_id):
-    post = Post.query.get_or_404(post_id)
-    if post.author != current_user:
+def update_show(show_id):
+    show = Show.query.get_or_404(show_id)
+    if show.author != current_user:
         abort(403)
-    form = PostForm()
+    form = ShowForm()
     if form.validate_on_submit():
-        post.title = form.title.data
-        post.content = form.content.data
+        show.title = form.title.data
+        show.description = form.description.data
+        show.category = form.category.data
+        show.show_language = form.show_language.data
         db.session.commit()
-        flash('Your post has been updated!', 'success')
-        return redirect(url_for('post', post_id=post.id))
+        flash('Your show has been updated!', 'success')
+        return redirect(url_for('show', show_id=show.id))
     elif request.method == 'GET':
-        form.title.data = post.title
-        form.content.data = post.content
-    return render_template('create_post.html', title='Update Post',
-                           form=form, legend='Update Post')
+        show.title = show.title
+        show.description = show.description
+        show.category = show.category
+        show.show_language = show.show_language
+    return render_template('create_show.html', title='Update Show',
+                           form=form, legend='Update Show')
 
 
-@app.route("/post/<int:post_id>/delete", methods=['POST'])
+@app.route("/show/<int:show_id>/delete", methods=['POST'])
 @login_required
-def delete_post(post_id):
-    post = Post.query.get_or_404(post_id)
-    if post.author != current_user:
+def delete_show(show_id):
+    show = Show.query.get_or_404(show_id)
+    if show.author != current_user:
         abort(403)
-    db.session.delete(post)
+    db.session.delete(show)
     db.session.commit()
-    flash('Your post has been deleted!', 'success')
+    flash('Your show has been deleted!', 'success')
     return redirect(url_for('home'))
+
+@app.route("/user/<string:username>")
+def user_posts(username):
+    page = request.args.get('page', 1, type=int)
+    user = User.query.filter_by(username=username).first_or_404()
+    shows = Show.query.filter_by(author=user)\
+        .order_by(Show.date_posted.desc())\
+        .paginate(page=page, per_page=5)
+    return render_template('user_shows.html', shows=shows, user=user)
+
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Pulse Password Reset Request',
+                  sender='luyanda23@gmail.com',
+                  recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+    {url_for('reset_token', token=token, _external=True)}
+    If you did not make this request then simply ignore this email and no changes will be made.
+    '''
+    mail.send(msg)
+
+
+@app.route("/reset_password", methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html', title='Reset Password', form=form)
+
+
+@app.route("/reset_password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user.password = hashed_password
+        db.session.commit()
+        flash('Your password has been updated! You are now able to log in', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_token.html', title='Reset Password', form=form)

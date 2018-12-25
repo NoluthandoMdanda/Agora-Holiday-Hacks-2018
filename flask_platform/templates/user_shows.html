@@ -1,30 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="row headline"><!-- Begin Headline -->
-    
-     	<!-- Slider Carousel
-        ================================================== -->
-        <div class="span8">
-            <div class="flexslider">
-              <ul class="slides">
-                <li><a href="gallery-single.htm"><img src="img/gallery/slider-img-1.jpg" alt="slider" /></a></li>
-                <li><a href="gallery-single.htm"><img src="img/gallery/slider-img-1.jpg" alt="slider" /></a></li>
-                <li><a href="gallery-single.htm"><img src="img/gallery/slider-img-1.jpg" alt="slider" /></a></li>
-                <li><a href="gallery-single.htm"><img src="img/gallery/slider-img-1.jpg" alt="slider" /></a></li>
-                <li><a href="gallery-single.htm"><img src="img/gallery/slider-img-1.jpg" alt="slider" /></a></li>
-              </ul>
+        <div class="row">
+                <div class="span6">
+                    <img class="align-left thumbnail" src="{{ image_file }}">
+                </div>
+                <div class="span6">
+                    <h2>{{ user.username }} ({{ shows.total }}) }}</h2>
+                    <p class="lead"></p>
+                    <p></p>
+
+                    <ul class="project-info">
+                        <li><h6>Description:</h6></li>
+                        <li><h6>Catergory:</h6></li>
+                        <li><h6>Language(s):</h6></li>
+                    </ul>
+
+                    <button class="btn btn-inverse pull-left" type="button">Live Now</button>
+                    <button class="btn btn-inverse pull-left" type="button">   Update/View Schedule</button>
+                </div>
             </div>
-        </div>
-        
-        <!-- Headline Text
-        ================================================== -->
-        <div class="span4">
-        	<h3>Welcome to PULSE <br />
-            </h3>
-            <p class="lead">Hear brilliant live music, listen to various talk shows, hear debates about politics, watch ,live lessons on educational content,... </p>
-            <p></p>
-            <a href="#"><i class="icon-plus-sign"></i>Read More</a> 
-        </div>
+
     </div><!-- End Headline -->
     
     <div class="row gallery-row"><!-- Begin Gallery Row --> 
@@ -67,9 +63,9 @@
     {% for page_num in shows.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
       {% if page_num %}
         {% if shows.page == page_num %}
-          <a class="btn btn-danger mb-4" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+          <a class="btn btn-danger mb-4" href="{{ url_for('user_shows', username=user.username, page=page_num) }}">{{ page_num }}</a>
         {% else %}
-          <a class="btn btn-outline-danger mb-4" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+          <a class="btn btn-outline-danger mb-4" href="{{ url_for('user_shows', username=user.username, page=page_num) }}">{{ page_num }}</a>
         {% endif %}
       {% else %}
         ...
