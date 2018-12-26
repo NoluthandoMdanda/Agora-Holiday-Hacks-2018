@@ -43,10 +43,10 @@
 					          <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + show.author.image_file) }}">
 					          <div class="media-body">
 					            <div class="article-metadata">
-					              <a class="mr-2" href="{{ url_for('user_shows', username=show.author.username) }}">{{ show.author.username }}</a>
+					              <a class="mr-2" href="{{ url_for('users.user_shows', username=show.author.username) }}">{{ show.author.username }}</a>
 					              <small class="text-muted">{{ show.date_posted.strftime('%Y-%m-%d') }}</small>
 					            </div>
-					            <h2><a class="article-title" href="{{ url_for('show', show_id=show.id) }}">{{ show.title }}</a></h2>
+					            <h2><a class="article-title" href="{{ url_for('shows.show', show_id=show.id) }}">{{ show.title }}</a></h2>
 					            <p class="article-content">{{ show.description }}</p>
 					            <p class="article-content">{{ show.category }}</p>
 					            <p class="article-content">{{ show.show_language }}</p>
@@ -63,9 +63,9 @@
     {% for page_num in shows.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
       {% if page_num %}
         {% if shows.page == page_num %}
-          <a class="btn btn-danger mb-4" href="{{ url_for('user_shows', username=user.username, page=page_num) }}">{{ page_num }}</a>
+          <a class="btn btn-danger mb-4" href="{{ url_for('users.user_shows', username=user.username, page=page_num) }}">{{ page_num }}</a>
         {% else %}
-          <a class="btn btn-outline-danger mb-4" href="{{ url_for('user_shows', username=user.username, page=page_num) }}">{{ page_num }}</a>
+          <a class="btn btn-outline-danger mb-4" href="{{ url_for('users.user_shows', username=user.username, page=page_num) }}">{{ page_num }}</a>
         {% endif %}
       {% else %}
         ...

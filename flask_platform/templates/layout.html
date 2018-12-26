@@ -79,7 +79,7 @@
         <!-- Logo
         ================================================== -->
         <div class="span5 logo">
-        	<a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='logos/red_logo.png') }}" alt="" /></a>
+        	<a href="{{ url_for('main.home') }}"><img src="{{ url_for('static', filename='logos/red_logo.png') }}" alt="" /></a>
         </div>
         
         <!-- Main Navigation
@@ -89,15 +89,15 @@
             
             <ul class="nav">
             <!-- Excluding li class = "active" for all columns for simplicity-->
-	            <li><a href="{{ url_for('home') }}">Home</a></li>
-	            <li><a href="{{ url_for('about') }}">About</a></li>
+	            <li><a href="{{ url_for('main.home') }}">Home</a></li>
+	            <li><a href="{{ url_for('main.about') }}">About</a></li>
 	            {% if current_user.is_authenticated %}
-	            	<li><a href="{{ url_for('new_show') }}">Create a Show</a></li>
-	            	<li><a href="{{ url_for('account') }}">Account</a></li>
-	            	<li><a href="{{ url_for('logout') }}">Logout</a></li>
+	            	<li><a href="{{ url_for('shows.new_show') }}">Create a Show</a></li>
+	            	<li><a href="{{ url_for('users.account') }}">Account</a></li>
+	            	<li><a href="{{ url_for('users.logout') }}">Logout</a></li>
               	{% else %}
-              		<li><a href="{{ url_for('login') }}">Login</a></li>
-	            	<li><a href="{{ url_for('register') }}">Register</a></li>
+              		<li><a href="{{ url_for('users.login') }}">Login</a></li>
+	            	<li><a href="{{ url_for('users.register') }}">Register</a></li>
               	{% endif %}
             </ul>
            
@@ -109,10 +109,17 @@
                 <div class="mobile-nav-select">
                 <select onchange="window.open(this.options[this.selectedIndex].value,'_top')">
                     <option value="">Navigate...</option>
-                    <option value="{{ url_for('home') }}">Home</option>
-                    <option value="{{ url_for('about') }}">About</option>
-                    <option value="{{ url_for('login') }}">Login</option>
-                    <option value="{{ url_for('register') }}">Register</option>
+                    <option value="{{ url_for('main.home') }}">Home</option>
+                    <option value="{{ url_for('main.about') }}">About</option>
+                    {% if current_user.is_authenticated %}
+	                    <option value="{{ url_for('shows.new_show') }}">Create a Show</option>
+	                    <option value="{{ url_for('users.account') }}">Account</option>
+	                    <option value="{{ url_for('users.account') }}">Logout</option>
+                    {% else %}
+                    	<option value="{{ url_for('users.login') }}">Login</option>
+	                    <option value="{{ url_for('users.register') }}">Register</option>
+
+                    {% endif %}
                 </select>
                 </div>
                 </form>
