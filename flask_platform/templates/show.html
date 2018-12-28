@@ -6,12 +6,15 @@
       <div class="article-metadata">
         <a class="mr-2" href="{{ url_for('users.user_shows', username=show.author.username) }}">{{ show.author.username }}</a>
         <small class="text-muted">{{ show.date_posted.strftime('%Y-%m-%d') }}</small>
-        {% if show.author == current_user %}
-          <div>
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('shows.update_show', show_id=show.id) }}">Update</a>
-            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
-          </div>
+        <div>
+        {% if show.author == current_user %}          
+          <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('shows.update_show', show_id=show.id) }}">Update</a>
+          <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
+          <a class="btn btn-success btn-sm mt-1 mb-1" href="{{ url_for('shows.update_show', show_id=show.id) }}">Go Live!</a>    
+        {% else %}
+          <a class="btn btn-success btn-sm mt-1 mb-1" href="{{ url_for('shows.update_show', show_id=show.id) }}">Tune in!</a> 
         {% endif %}
+        </div>
       </div>
       <h2 class="article-title">{{ show.title }}</h2>
       <p class="article-content">{{ show.description }}</p>

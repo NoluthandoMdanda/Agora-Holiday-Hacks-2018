@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+     <!-- Title Header -->
+    <div class="row">
+        <div class="span12">
+            <h1>About</h1>
+            <p class='lead'>PULSE is a global radio platfrom which allows anyone to create a live-stream radio broadcast at which they can display any content (within guidelines). Listeners are able to watch a Creator's content and are able to send comments on the live-stream, and Creator's are able to pin the most important comments and are able to accept calls from any Listener, no matter their location in the world. <a href="https://www.beautiful.ai/deck/-LUR-3YqXsWsJMxNPR07/Agora-Hackathon-Pulse-Pitch" ><button class="btn btn-small btn-inverse" type="button">Link to our Pitch Deck</button></a></p>
+
+            <h3 class="title-bg">TEAM</h3>
+            <div class="row">
+                <div class="span6">
+                    <img src="{{ url_for('static', filename='img/luyanda.jpg') }}" alt="" />
+                    <h3>Luyanda Mdanda</h3>
+                    <p>Lead Developer</p>
+                     <a href="https://github.com/LuyandaMdanda" ><button class="btn btn-small btn-inverse" type="button">Go to my GitHub</button></a>
+                </div>
+                <div class="span6">
+                    <img src="{{ url_for('static', filename='img/noluthando.jpg') }}" alt="" />
+                    <h3>Noluthando Mdanda</h3>
+                    <p>Lead Program Manager</p>
+                    <a href="https://github.com/NoluthandoMdanda" ><button class="btn btn-small btn-inverse" type="button">Go to my GitHub</button></a>
+                </div>
+            </div>
+
+        </div> 
+    </div>
+    
+    </div> <!-- End Container -->
+
+{% endblock content %}

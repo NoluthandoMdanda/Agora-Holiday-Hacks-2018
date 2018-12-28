@@ -1,4 +1,3 @@
-from flask import Blueprint
 from flask import (render_template, url_for, flash,
                    redirect, request, abort, Blueprint)
 from flask_login import current_user, login_required
@@ -63,3 +62,28 @@ def delete_show(show_id):
     db.session.commit()
     flash('Your show has been deleted!', 'success')
     return redirect(url_for('main.home'))
+
+@shows.route("/show/<int:show_id>/live", methods=['GET', 'POST'])
+@login_required
+def enter_show(show_id):
+    show = Show.query.get_or_404(show_id)
+    if show.author != current_user:
+        abort(403)
+    form = ShowForm()
+    if form.validate_on_submit():
+        show.title = form.title.data
+        show.description = form.description.data
+        show.category = form.category.data
+        show.show_language = form.show_language.data
+        db.session.commit()
+        flash('Your show has been updated!', 'success')
+        return redirect(url_for('shows.show', show_id=show.id))
+    elif request.method == 'GET':
+        show.title = show.title
+        show.description = show.description
+        show.category = show.category
+        show.show_language = show.show_language
+    return render_template('create_show.html', title='Update Show',
+                           form=form, legend='Update Show')
+
+
