@@ -7,12 +7,12 @@
         <a class="mr-2" href="{{ url_for('users.user_shows', username=show.author.username) }}">{{ show.author.username }}</a>
         <small class="text-muted">{{ show.date_posted.strftime('%Y-%m-%d') }}</small>
         <div>
-        {% if show.author == current_user %}          
+        {% if show.author == current_user %}
+          <a class="btn btn-success btn-sm mt-1 mb-1" href="{{ url_for('shows.host_show', show_id=show.id) }}">Go Live!</a>
           <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('shows.update_show', show_id=show.id) }}">Update</a>
-          <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
-          <a class="btn btn-success btn-sm mt-1 mb-1" href="{{ url_for('shows.update_show', show_id=show.id) }}">Go Live!</a>    
+          <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>  
         {% else %}
-          <a class="btn btn-success btn-sm mt-1 mb-1" href="{{ url_for('shows.update_show', show_id=show.id) }}">Tune in!</a> 
+          <a class="btn btn-success btn-sm mt-1 mb-1" href="{{ url_for('shows.host_show', show_id=show.id) }}">Tune in!</a> 
         {% endif %}
         </div>
       </div>

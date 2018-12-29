@@ -63,6 +63,17 @@ def delete_show(show_id):
     flash('Your show has been deleted!', 'success')
     return redirect(url_for('main.home'))
 
+
+@shows.route("/show/<int:show_id>/host")
+@login_required
+def host_show(show_id):
+    show = Show.query.get_or_404(show_id)
+    if show.author != current_user:
+        abort(403)
+    flash('You are now ready to go live!', 'success')
+    return render_template('host_show.html', title=show.title, show=show)
+
+
 @shows.route("/show/<int:show_id>/live", methods=['GET', 'POST'])
 @login_required
 def enter_show(show_id):
@@ -85,5 +96,6 @@ def enter_show(show_id):
         show.show_language = show.show_language
     return render_template('create_show.html', title='Update Show',
                            form=form, legend='Update Show')
+
 
 
