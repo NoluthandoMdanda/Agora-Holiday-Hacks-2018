@@ -3,7 +3,7 @@
     <article class="media content-section">
         <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + show.author.image_file) }}">
         <div class="media-body">
-          <h2 id="status" class="article-title"> Prepared to watch {{ show.title }}</h2>
+          <h2 id="status" class="article-title"> Prepared to broadcast {{ show.title }}. Press Join</h2>
             <a class="mr-2" href="{{ url_for('users.user_shows', username=show.author.username) }}">
                 <p class="article-content">Host: {{ show.author.username }}</p>
             </a>
@@ -14,11 +14,14 @@
   </article>
 
     <div id="div_join" class="panel panel-default">
+        <div id="video" style="margin:0 auto;">
+            <div id="agora_local" style="float:right;width:210px;height:147px;display:inline-block;"></div>
+        </div>
         <div class="panel-body">
             App ID: <input id="appId" type="text" value="ffbc287523d645499a89e995d9fa4fe6" size="36" readonly></input>
             Channel: <input id="channel" type="text" value={{ show.id }} size="4"readonly></input>
             Host: <input id="video" type="checkbox" unchecked readonly></input>
-            <button id="join" class="btn btn-primary" onclick='document.getElementById("status").innerHTML = "Nearly ready to Broadcasting: Time to Publish";join();'>Listen</button>
+            <button id="join" class="btn btn-primary" onclick='document.getElementById("status").innerHTML = "Now Broadcasting: {{ show.title}}";join();'>Listen</button>
             <button id="leave" class="btn btn-secondary" disabled= true onclick='document.getElementById("status").innerHTML = "You have now left {{ show.title }}. Hope to see you soon!";leave();'>Leave</button>
         </div>
         <div id="div_device" class="panel panel-default">
@@ -34,10 +37,6 @@
         </div>
         </div>
 
-        <div id="video" style="margin:0 auto;">
-            <div id="agora_local" style="float:right;width:210px;height:147px;display:inline-block;"></div>
-        </div>
-
         <script language="javascript">
 
             if(!AgoraRTC.checkSystemRequirements()) {
@@ -49,53 +48,55 @@
             var audioSelect = document.querySelector('select#audioSource');
             var videoSelect = document.querySelector('select#videoSource');
 
+
+              
             function join() {
               document.getElementById("join").disabled = true;
               document.getElementById("leave").disabled = false;
               document.getElementById("callIn").disabled = false;
               var channel_key = null;
 
-              console.log("Init AgoraRTC client with vendor key: " + key.value);
-              client = AgoraRTC.createClient({mode: 'live'});
-
-
-              client.init(key.value, function () {
+              console.log("Init AgoraRTC client with App ID: " + appId.value);
+              client = AgoraRTC.createClient({mode: 'interop'});
+              client.init(appId.value, function () {
                 console.log("AgoraRTC client initialized");
                 client.join(channel_key, channel.value, null, function(uid) {
                   console.log("User " + uid + " join channel successfully");
 
-                  camera = videoSource.value;
-                  microphone = audioSource.value;
-                  localStream = AgoraRTC.createStream({streamID: uid, audio: false, cameraId: camera, microphoneId: microphone, video: false, screen: false});
                   if (document.getElementById("video").checked) {
-                    localStream.setVideoProfile('720p_3');
+                    camera = videoSource.value;
+                    microphone = audioSource.value;
+                    localStream = AgoraRTC.createStream({streamID: uid, audio: true, cameraId: camera, microphoneId: microphone, video: document.getElementById("video").checked, screen: false});
+                    if (document.getElementById("video").checked) {
+                      localStream.setVideoProfile('720p_3');
 
+                    }
+
+                    // The user has granted access to the camera and mic.
+                    localStream.on("accessAllowed", function() {
+                      console.log("accessAllowed");
+                    });
+
+                    // The user has denied access to the camera and mic.
+                    localStream.on("accessDenied", function() {
+                      console.log("accessDenied");
+                    });
+
+                    localStream.init(function() {
+                      console.log("getUserMedia successfully");
+                      localStream.play('agora_local');
+
+                      client.publish(localStream, function (err) {
+                        console.log("Publish local stream error: " + err);
+                      });
+
+                      client.on('stream-published', function (evt) {
+                        console.log("Publish local stream successfully");
+                      });
+                    }, function (err) {
+                      console.log("getUserMedia failed", err);
+                    });
                   }
-
-                  // The user has granted access to the camera and mic.
-                  localStream.on("accessAllowed", function() {
-                    console.log("accessAllowed");
-                  });
-
-                  // The user has denied access to the camera and mic.
-                  localStream.on("accessDenied", function() {
-                    console.log("accessDenied");
-                  });
-
-                  localStream.init(function() {
-                    console.log("getUserMedia successfully");
-                    localStream.play('agora_local');
-
-                    client.publish(localStream, function (err) {
-                      console.log("Publish local stream error: " + err);
-                    });
-
-                    client.on('stream-published', function (evt) {
-                      console.log("Publish local stream successfully");
-                    });
-                  }, function (err) {
-                    console.log("getUserMedia failed", err);
-                  });
                 }, function(err) {
                   console.log("Join channel failed", err);
                 });
