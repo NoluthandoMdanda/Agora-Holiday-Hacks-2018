@@ -50,7 +50,7 @@
 
 
               
-            function join() {
+            function join(video_toggle=false, audio_toggle=false) {
               document.getElementById("join").disabled = true;
               document.getElementById("leave").disabled = false;
               document.getElementById("callIn").disabled = false;
@@ -63,10 +63,9 @@
                 client.join(channel_key, channel.value, null, function(uid) {
                   console.log("User " + uid + " join channel successfully");
 
-                  if (document.getElementById("video").checked) {
                     camera = videoSource.value;
                     microphone = audioSource.value;
-                    localStream = AgoraRTC.createStream({streamID: uid, audio: true, cameraId: camera, microphoneId: microphone, video: document.getElementById("video").checked, screen: false});
+                    localStream = AgoraRTC.createStream({streamID: uid, audio: audio_toggle, cameraId: camera, microphoneId: microphone, video: video_toggle, screen: false});
                     if (document.getElementById("video").checked) {
                       localStream.setVideoProfile('720p_3');
 
@@ -96,7 +95,7 @@
                     }, function (err) {
                       console.log("getUserMedia failed", err);
                     });
-                  }
+                  
                 }, function(err) {
                   console.log("Join channel failed", err);
                 });
@@ -166,6 +165,8 @@
 
             function callIn()
             {
+              leave();
+              join(true, true);
               document.getElementById("callIn").disabled = true;
               document.getElementById("endCall").disabled = false;
               localStream.enableAudio();
