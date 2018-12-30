@@ -20,8 +20,21 @@
         <div class="span7">
         	<h3>Welcome to PULSE <br />
             </h3>
-            <p class="lead">Hear brilliant live music, listen to various talk shows, hear debates about politics, watch ,live lessons on educational content,... </p>
-            <p></p>
+            <p class="lead">Hear live artists, listen to various talk shows, engage in broadcasted events, stream games, and learn from live lessons on educational content. All this content and more... created by you, for you. All in real-time. </p>
+            <ul>
+                <li>
+                    Create user accounts and shows.
+                </li>
+                <li>
+                    Listen and create on any device.
+                </li>
+                <li>
+                    Engage with creators by calling in and commenting.
+                </li>
+                <li>
+                    Share your voice with the world.
+                </li>
+            </ul>
         </div>
     </div><!-- End Headline -->
     
@@ -38,28 +51,29 @@
             <ul class="gallery-post-grid holder">
 	                    {% for show in shows.items %}
 	                    <!-- Show Items -->
-	                    <li  class="span3 gallery-item" data-id="id-1" data-type="illustration">
+	                    <li class="span3 gallery-item" data-id="id-{{show.id}}" data-type="illustration">
 	                        <article class="media content-section">
 					          <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + show.author.image_file) }}">
 					          <div class="media-body">
 					            <div class="article-metadata">
-					              <a class="mr-2" href="{{ url_for('users.user_shows', username=show.author.username) }}">{{ show.author.username }}</a>
+					              <a class="mr-2" href="{{ url_for('users.user_shows', username=show.author.username) }}">by: {{ show.author.username }}</a>
 					              <small class="text-muted">{{ show.date_posted.strftime('%Y-%m-%d') }}</small>
 					            </div>
 					            <h2><a class="article-title" href="{{ url_for('shows.show', show_id=show.id) }}">{{ show.title }}</a></h2>
-					            <p class="article-content">{{ show.description }}</p>
-					            <p class="article-content">{{ show.category }}</p>
-					            <p class="article-content">{{ show.show_language }}</p>
+					            <p class="article-content">Description: {{ show.description }}</p>
+					            <p class="article-content">Category: {{ show.category }}</p>
+					            <p class="article-content">Language: {{ show.show_language }}</p>
 					          </div>
 					        </article>
-	                    </li>	                    
+	                    </li>
+                        {% endfor %}	                    
                 </ul>
                 </div>
             </div>
 
  
     </div><!-- End Gallery Row -->
-    {% endfor %}
+    
     {% for page_num in shows.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
       {% if page_num %}
         {% if shows.page == page_num %}

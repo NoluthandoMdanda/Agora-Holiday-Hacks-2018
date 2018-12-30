@@ -47,14 +47,14 @@
 					            <p class="article-content">Show Language: {{ show.show_language }}</p>
 					          </div>
 					        </article>
-	                    </li>	                    
+	                    </li>	 
+                        {% endfor %}                   
                 </ul>
                 </div>
             </div>
 
  
     </div><!-- End Gallery Row -->
-    {% endfor %}
     {% for page_num in shows.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
       {% if page_num %}
         {% if shows.page == page_num %}

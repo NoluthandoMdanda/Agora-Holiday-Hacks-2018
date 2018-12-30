@@ -1,0 +1,7 @@
+Running instructions.
+
+1. run the "run.py" script found in the main directory.
+2. Navigate to "http://localhost:5000", create an account, and create a show
+3. Join other shows and connect to their live broadcasts.
+
+Thank you and enjoy :)
