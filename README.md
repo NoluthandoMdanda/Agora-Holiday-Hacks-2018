@@ -1,4 +1,4 @@
-# Pulse
+# Pulse 💻
 
 A JavaScript project built during a holiday hackathon to explore real‑time interactions and creative front‑end features.
 
@@ -14,7 +14,7 @@ Front‑end development and feature prototyping.
 
 #### Tech Stack
 
-JavaScript
+HTML, CSS, JavaScript, python, flask, and Agora.io Web SDK
 
 ##### Find Out More Here
 
